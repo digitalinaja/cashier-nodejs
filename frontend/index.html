@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <title>Cashier App</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <div id="app">
+    <h1>Cashier App - <small>Dashboard</small></h1>
+    <nav>
+      <a href="./index.html">Dashboard</a>
+      <a href="./index.sales.html">Sales</a>
+      <a href="./index.produk.html">Produk</a>
+    </nav>
+    <h2>Today's Sales</h2>
+    <ul id="sales-list"></ul>
+    <h2>Etalase</h2>
+    <div id="sales-items-list"></div>
+    <h2>Cart</h2>
+    <div id="cart-list"></div>
+    <button id="checkout-button">Checkout</button>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="service-worker.js"></script>
+</body>
+</html>

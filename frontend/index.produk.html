@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <title>Produk - Cashier App</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Cashier App - <small>Produk</small></h1>
+        <nav>
+        <a href="./index.html">Dashboard</a>
+        <a href="./index.sales.html">Sales</a>
+        <a href="./index.produk.html">Produk</a>
+        </nav>
+        <h2>Produk</h2>
+        <button id="tambah-button">Tambah produk</button>
+        <div id="produk-form" style="display: none;">
+            <input type="text" id="nama-produk" placeholder="Nama Produk">
+            <input type="number" id="harga-produk" placeholder="Harga">
+            <button id="add-produk-baru">Simpan</button>
+        </div>
+        <div id="sales-items-list"></div>
+    </div>
+    <script src="app.produk.js"></script>
+</body>
+</html>
