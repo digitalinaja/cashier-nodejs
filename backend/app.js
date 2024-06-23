@@ -4,6 +4,7 @@ const cors = require('cors');
 const axios = require('axios');
 const path = require('path');
 const base64 = require('base-64');
+const basicAuth = require('basic-auth');
 const salesRoutes = require('./routes/sales');
 
 // Create an Express application
@@ -14,7 +15,24 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.json());
 app.use(cors());
 
+// Basic Authentication Middleware
+const auth = (req, res, next) => {
+  const user = basicAuth(req);
+  const { name, pass } = user || {};
+
+  const isAuthorized = name === process.env.BASIC_AUTH_USERNAME && pass === process.env.BASIC_AUTH_PASSWORD;
+
+  if (isAuthorized) {
+    return next();
+  }
+
+  res.set('WWW-Authenticate', 'Basic realm="401"').status(401).send('Authentication required.');
+};
+
 app.use('/api-new', salesRoutes);
+
+// Apply the auth middleware to all other routes
+app.use(auth);
 
 // Serve static files from the frontend directory
 app.use(express.static(path.join(__dirname, 'public')));
