@@ -8,10 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function addProduk() {
+        const produkId = document.getElementById('produk-id').value;
         const namaProduk = document.getElementById('nama-produk').value;
         const hargaProduk = document.getElementById('harga-produk').value;
-    
-        const url = '/api-new/add-produk'; //
+        const url = produkId ? '/api-new/update-produk' : '/api-new/add-produk';
+
+        const requestBody = produkId ? 
+            { id: produkId, name: namaProduk, price: hargaProduk } : 
+            { name: namaProduk, price: hargaProduk };
         
         try {
             const response = await fetch(url, {
@@ -19,19 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    name: namaProduk,
-                    price: hargaProduk
-                }),
+                body: JSON.stringify(requestBody),
             });
     
             if (!response.ok) {
-                throw new Error('Gagal menambahkan produk');
+                throw new Error(produkId ? 'Gagal mengupdate produk' : 'Gagal menambahkan produk');
             }
     
-            alert('Produk berhasil ditambahkan!');
+            alert(produkId ? 'Produk berhasil diupdate!' : 'Produk berhasil ditambahkan!');
+            document.getElementById('produk-form').style.display = 'none';
             fetchSalesItems();
-            // Tambahan: mungkin Anda ingin melakukan sesuatu setelah berhasil menambahkan produk
     
         } catch (error) {
             console.error('Error:', error);
@@ -52,16 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const toggleValue = (variable) => {
-        if (variable === "1") {
-            return 0;
-        } else if (variable === "0") {
-            return 1;
-        } else {
-            // Menangani kasus jika nilai variabel tidak valid (opsional)
-            console.log(variable)
-            throw new Error('Nilai variabel harus 0 atau 1');
-        }
-    }
+        return variable === "1" ? "0" : "1";
+    };
   
     // Function to display sales items
     const displaySalesItems = (items) => {
@@ -70,14 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
   
       items.data.forEach(item => {
         const itemElement = document.createElement('div');
-        let availstatus = "Ok";
-        let classred = "";
-        if (item.available=="0") {
-            availstatus = "!" 
-            classred = "not-available"
-        }
+        let availstatus = item.available === "0" ? "!" : "Ok";
+        let classred = item.available === "0" ? "not-available" : "";
         let availChange = toggleValue(item.available);
+
         itemElement.className = 'sales-item';
+        itemElement.dataset.id = item.id;
+        itemElement.dataset.name = item.name;
+        itemElement.dataset.price = item.price;
+        itemElement.dataset.available = item.available;
   
         itemElement.innerHTML = `
           <div>${item.name}</div>
@@ -88,10 +82,24 @@ document.addEventListener('DOMContentLoaded', () => {
         salesItemsList.appendChild(itemElement);
       });
 
+      document.querySelectorAll('.sales-item').forEach(item => {
+        item.addEventListener('click', populateForm);
+      });
       document.querySelectorAll('.update-availability').forEach(button => {
         button.addEventListener('click', updateAvailability);
       });
   
+    };
+
+    const populateForm = (event) => {
+        const produkId = event.currentTarget.dataset.id;
+        const namaProduk = event.currentTarget.dataset.name;
+        const hargaProduk = event.currentTarget.dataset.price;
+
+        document.getElementById('produk-id').value = produkId;
+        document.getElementById('nama-produk').value = namaProduk;
+        document.getElementById('harga-produk').value = hargaProduk;
+        document.getElementById('produk-form').style.display = 'block';
     };
 
     // Function to fetch items
