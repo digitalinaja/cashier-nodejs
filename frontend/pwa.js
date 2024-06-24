@@ -3,7 +3,7 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready.then((registration) => {
       registration.active.postMessage({
         type: 'APP_VERSION_CHECK',
-        version: '0.0.5' // Replace with your app's current version
+        version: '1.0.1' // Replace with your app's current version
       });
     });
   }
