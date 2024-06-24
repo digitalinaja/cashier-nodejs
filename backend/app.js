@@ -29,7 +29,22 @@ const auth = (req, res, next) => {
   res.set('WWW-Authenticate', 'Basic realm="401"').status(401).send('Authentication required.');
 };
 
+//without basic-auth
 app.use('/api-new', salesRoutes);
+
+// Routes that do not require authentication
+const openRoutes = [
+  '/manifest.json',
+  '/service-worker.js',
+  '/icon.png'
+];
+
+app.use((req, res, next) => {
+  if (openRoutes.includes(req.path) || req.path.startsWith('/static/')) {
+    return next();
+  }
+  auth(req, res, next);
+});
 
 // Apply the auth middleware to all other routes
 app.use(auth);
