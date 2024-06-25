@@ -29,11 +29,28 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('DOMContentLoaded', () => {
     // Function to fetch today's sales data
     const fetchTodaysSales = async () => {
+      const API_URL = '/api-new/sales-today-produk';
+      if ('caches' in window) {
+          const cache = await caches.open('api-cache-v1');
+          const cachedResponse = await cache.match(API_URL+"_cache");
+          if (cachedResponse) {
+              const data = await cachedResponse.json();
+              console.log('Loaded from Cache:', data);
+              displaySales(data);
+          }
+      }
       try {
         const response = await fetch('/api-new/sales-today-produk');
         const sales = await response.json();
-        console.log(sales);
+        // console.log(sales);
         displaySales(sales);
+
+        // Save the response to the cache
+        const cache = await caches.open('api-cache-v1');
+        cache.put(API_URL+"_cache", new Response(JSON.stringify(sales), {
+            headers: { 'Content-Type': 'application/json' }
+        }));
+        console.log('Fetched from API and saved to Cache:', sales);
       } catch (error) {
         console.error('Error fetching today\'s sales:', error);
       }
@@ -77,11 +94,29 @@ document.addEventListener('DOMContentLoaded', () => {
   
     // Function to fetch sales items
     const fetchSalesItems = async () => {
+      const API_URL = '/api-new/items/all_available';
+      if ('caches' in window) {
+          const cache = await caches.open('api-cache-v1');
+          const cachedResponse = await cache.match(API_URL+"_cache");
+          if (cachedResponse) {
+              const data = await cachedResponse.json();
+              console.log('Loaded from Cache:', data);
+              displaySalesItems(data);
+          }
+      }
       try {
         const response = await fetch('/api-new/items/all_available');
         const salesItems = await response.json();
-        console.log(salesItems) 
         displaySalesItems(salesItems);
+        console.log("Load data from rest api : ", salesItems) 
+
+        // Save the response to the cache
+        const cache = await caches.open('api-cache-v1');
+        cache.put(API_URL+"_cache", new Response(JSON.stringify(salesItems), {
+            headers: { 'Content-Type': 'application/json' }
+        }));
+        console.log('... and saved to Cache:', salesItems);
+
       } catch (error) {
         console.error('Error fetching sales items:', error);
       }

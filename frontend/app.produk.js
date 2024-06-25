@@ -1,4 +1,36 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+async function fetchSalesItems() {
+    const API_URL = '/api-new/items/all';
+    if ('caches' in window) {
+        const cache = await caches.open('api-cache-v1');
+        const cachedResponse = await cache.match(API_URL+"_cache");
+        if (cachedResponse) {
+            const data = await cachedResponse.json();
+            console.log('Loaded from Cache:', data);
+            displaySalesItems(data);
+        }
+    }
+
+    try {
+        const response = await fetch(API_URL);
+        const salesItems = await response.json();
+        displaySalesItems(salesItems);
+
+        // Save the response to the cache
+        const cache = await caches.open('api-cache-v1');
+        cache.put(API_URL+"_cache", new Response(JSON.stringify(salesItems), {
+            headers: { 'Content-Type': 'application/json' }
+        }));
+        console.log('Fetched from API and saved to Cache:', salesItems);
+    } catch (error) {
+        console.error('Error fetching sales items:', error);
+    }
+}
+
+/// ------------------
+
+
     document.getElementById('add-produk-baru').addEventListener('click', addProduk);
     // let selectedItems = [];
   
@@ -41,16 +73,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Function to fetch items
-    const fetchSalesItems = async () => {
-      try {
-        const response = await fetch('/api-new/items/all');
-        const salesItems = await response.json();
-        console.log(salesItems) 
-        displaySalesItems(salesItems);
-      } catch (error) {
-        console.error('Error fetching sales items:', error);
-      }
-    };
+    // const fetchSalesItems = async () => {
+    //   try {
+    //     const response = await fetch('/api-new/items/all');
+    //     const salesItems = await response.json();
+    //     console.log(salesItems) 
+    //     displaySalesItems(salesItems);
+    //   } catch (error) {
+    //     console.error('Error fetching sales items:', error);
+    //   }
+    // };
 
     const toggleValue = (variable) => {
         return variable === "1" ? "0" : "1";
@@ -104,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to fetch items
     const updateAvailability = async (event) => {
+        event.stopPropagation();
         const produkId = event.target.getAttribute('data-id');
         const availChange = parseInt(event.target.getAttribute('data-avail'));
         try {
